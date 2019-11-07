@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ApiKeys from './constants/ApiKeys';
+import ApiKeys from './src/constants/ApiKeys';
 import * as firebase from 'firebase';
+import HeaderApp from './src/components/HeaderApp';
 
 
 export default class App extends React.Component {
@@ -12,9 +13,7 @@ export default class App extends React.Component {
   }
   render(){
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx</Text>
-    </View>
+      <HeaderApp/>
   );
 }}
 
