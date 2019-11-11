@@ -4,6 +4,7 @@ import ApiKeys from './src/constants/ApiKeys';
 import * as firebase from 'firebase';
 import HeaderApp from './src/components/HeaderApp';
 
+import Main from './src/Main';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -13,7 +14,8 @@ export default class App extends React.Component {
   }
   render(){
   return (
-      <HeaderApp/>
+     // <HeaderApp/>
+      <Main/> // Build TODO app
   );
 }}
 
