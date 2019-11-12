@@ -3,17 +3,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import ApiKeys from './src/constants/ApiKeys';
 import * as firebase from 'firebase';
 import HeaderApp from './src/components/HeaderApp';
-
+import Login from './src/components/screens/Login';
+import SwitchNavigator from './src/components/navigation/SwitchNavigation'
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     // Initialize firebase
-    firebase.initializeApp(ApiKeys.firebaseConfig);
+    //Firebase.initializeApp(ApiKeys.firebaseConfig);
   }
   render(){
   return (
-      <HeaderApp/>
+      <SwitchNavigator/>
   );
 }}
 
