@@ -6,11 +6,11 @@ import * as firebase from 'firebase';
 import Main from './src/Main';
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    // Initialize firebase
-    firebase.initializeApp(ApiKeys.firebaseConfig);
-  }
+  // constructor(props) {
+  //   super(props);
+  //   // Initialize firebase
+  //   firebase.initializeApp(ApiKeys.firebaseConfig);
+  // }
   render(){
   return (
      // <HeaderApp/>
