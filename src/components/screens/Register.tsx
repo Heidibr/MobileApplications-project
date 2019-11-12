@@ -6,7 +6,7 @@ import {
     TextInput,
     Button
 } from "react-native";
-import HeaderApp from "../HeaderApp";
+import Main from "../../Main";
 import firebase from 'firebase';
 import * as Google from 'expo-google-app-auth';
 
@@ -103,7 +103,7 @@ class Register extends Component<any> {
       
             if (result.type === 'success') {
                 this.onSignIn(result); //send user to signIn to registrate
-                this.props.navigation.navigate('HeaderApp');
+                this.props.navigation.navigate('Main');
                 return result.accessToken;
           } else {
             return { cancelled: true };

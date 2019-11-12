@@ -21,7 +21,7 @@ class Login extends Component<any> {
         const {email, password} = this.state
         firebase.auth()
             .signInWithEmailAndPassword(email,password)
-            .then(() => this.props.navigation.navigate('HeaderApp'))
+            .then(() => this.props.navigation.navigate('Main'))
             .catch(error => console.log(error))
     }
 
@@ -98,7 +98,7 @@ class Login extends Component<any> {
       
             if (result.type === 'success') {
                 this.onSignIn(result); //send user to signIn to registrate
-                this.props.navigation.navigate('HeaderApp');
+                this.props.navigation.navigate('Main');
                 return result.accessToken;
           } else {
             return { cancelled: true };
