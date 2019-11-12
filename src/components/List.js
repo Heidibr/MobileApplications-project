@@ -1,23 +1,13 @@
 // src/components/List.js
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Dimensions, // dimensions: component that helps us to set the initial width and height of a component before the application runs. get() method to acquire any device's width and height.
-  StyleSheet,
-  TouchableOpacity, // behaves like a button but responds to touch on a mobile rather than a normal button as we use in web
-  Platform // detects the platform on which the app is running
-} from 'react-native';
+import {View, Text, Dimensions, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import {
-  itemListText,
-  itemListTextStrike,
-  circleInactive,
-  circleActive,
-  deleteIconColor
-} from '../utils/Colors';
+import {itemListText, itemListTextStrike, circleInactive, circleActive, deleteIconColor} from '../utils/Colors';
+
 const { height, width } = Dimensions.get('window'); 
+
 class List extends Component {
+  
   onToggleCircle = () => { // responds to the onPress action on TouchableOpacity that accordingly respond by checking or unchecking the to do list item.
     const { isCompleted, id, completeItem, incompleteItem } = this.props;
     if (isCompleted) {
@@ -26,6 +16,7 @@ class List extends Component {
       completeItem(id);
     }
   };
+
   render() {
     const { text, deleteItem, id, isCompleted } = this.props;
     return (
@@ -70,6 +61,8 @@ class List extends Component {
     );
   }
 }
+
+
 const styles = StyleSheet.create({
   container: {
     width: width - 50,
