@@ -1,16 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ApiKeys from './src/constants/ApiKeys';
-import * as firebase from 'firebase';
 import HeaderApp from './src/components/HeaderApp';
 import Login from './src/components/screens/Login';
 import SwitchNavigator from './src/components/navigation/SwitchNavigation'
+
+import * as firebase from 'firebase';
+import {firebaseConfig} from './config/firebaseConfig';
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     // Initialize firebase
-    //Firebase.initializeApp(ApiKeys.firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
   }
   render(){
   return (
