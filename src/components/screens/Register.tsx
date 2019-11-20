@@ -11,71 +11,69 @@ import firebase from 'firebase';
 import * as Google from 'expo-google-app-auth';
 
 class Register extends Component<any> {
-    state = {
-        name: '',
-        email:'',
-        password: ''
-    }
+  state = {
+    name: '',
+    email:'',
+    password: ''
+  }
 
-    handleSignup = () => {
-        const { email, password} = this.state
-
+  handleSignup = () => {
+    const {email, password} = this.state
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(function(result) {
         firebase
-            .auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then(
-            )
-            
-            .catch(error => console.log(error))
+        .database()
+        .ref('/users/' + result.user.uid)
+        .set({
+          mail: result.user.email,
+          created_at: Date.now()
+        })
+        this.props.navigation.navigate('Main')
+      })
+      .catch(error => console.log(error))
     }
 
-    isUserEqual = (googleUser, firebaseUser) => {
-        if (firebaseUser) {
-          var providerData = firebaseUser.providerData;
-          for (var i = 0; i < providerData.length; i++) {
-            if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+  isUserEqual = (googleUser, firebaseUser) => {
+    if (firebaseUser) {
+      var providerData = firebaseUser.providerData;
+      for (var i = 0; i < providerData.length; i++) {
+        if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
                 providerData[i].uid === googleUser.getBasicProfile().getId()) {
               // We don't need to reauth the Firebase connection.
-              return true;
-            }
-          }
+        return true;
         }
-        return false;
       }
+    }
+    return false;
+  }
 
-    onSignIn = (googleUser) => {
-        console.log('Google Auth Response', googleUser);
-        // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-        var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
-          unsubscribe();
-          // Check if we are already signed-in Firebase with the correct user.
-          if (!this.isUserEqual(googleUser, firebaseUser)) {
-            // Build Firebase credential with the Google ID token.
-            var credential = firebase.auth.GoogleAuthProvider.credential(
-                 //ma kanskje endre id token
-                
-                googleUser.idToken,
-                googleUser.accessToken
-            );
-            // Sign in with credential from the Google user.
+  onSignIn = (googleUser) => {
+    console.log('Google Auth Response', googleUser);
+    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+    var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
+      unsubscribe();
+      // Check if we are already signed-in Firebase with the correct user.
+      if (!this.isUserEqual(googleUser, firebaseUser)) {
+        // Build Firebase credential with the Google ID token.
+        var credential = firebase.auth.GoogleAuthProvider.credential(
+          //ma kanskje endre id token
+          googleUser.idToken,
+          googleUser.accessToken
+          );
+          // Sign in with credential from the Google user.
+          firebase
+            .auth()
+            .signInWithCredential(credential)
+            .then(function(result) {
             firebase
-                .auth()
-                .signInWithCredential(credential)
-                .then(function(result) {
-                firebase
-                    .auth()
-                    .signInAndRetrieveDataWithCredential(credential)
-                    .then(function(result) {
-                    console.log('user signed in ');
-                    firebase
-                        .database()
-                        .ref('/users/' + result.user.uid)
-                        .set({
-                          gmail: result.user.email,
-                          profile_picture: result.additionalUserInfo.profile,
-                          created_at: Date.now()
-                        })
-                  })
+              .database()
+              .ref('/users/' + result.user.uid)
+              .set({
+                gmail: result.user.email,
+                created_at: Date.now()
+              })              
             })
             .catch(function(error) {
               // Handle Errors here.
@@ -96,11 +94,10 @@ class Register extends Component<any> {
     signInWithGoogleAsync = async() => {
         try {
           const result = await Google.logInAsync({
-            clientId: '1052881175304-390qapid19bugq6ee1t926o7ilniorru.apps.googleusercontent.com',
+            clientId: '145090313122-nfem2tqoupjp2r53enqason5ni5mtpuv.apps.googleusercontent.com',
             scopes: ['profile', 'email'],
             behavior: 'web'
           });
-      
             if (result.type === 'success') {
                 this.onSignIn(result); //send user to signIn to registrate
                 this.props.navigation.navigate('Main');

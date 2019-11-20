@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import uuid from 'uuid/v1';
-
+import firebase from 'firebase';
+import '@firebase/firestore';
 import { primaryGradientArray } from './utils/Colors';
 import Header from './components/Header';
 import SubTitle from './components/SubTitle';
@@ -19,7 +20,6 @@ import Button from './components/Button';
 import { Container } from 'native-base';
 
 const headerTitle = 'Todo';
-
 export default class Main extends React.Component {
 	state = {
 		inputValue: '',
