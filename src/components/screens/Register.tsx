@@ -3,12 +3,13 @@ import {
     View,
     Text,
     StyleSheet,
-    TextInput,
-    Button
+    TouchableHighlight
 } from "react-native";
 import Main from "../../Main";
 import firebase from 'firebase';
 import * as Google from 'expo-google-app-auth';
+import { Input, Button, Header, Icon} from 'react-native-elements';
+
 
 class Register extends Component<any> {
     state = {
@@ -77,6 +78,7 @@ class Register extends Component<any> {
                         })
                   })
             })
+            .then(() => this.props.navigation.navigate('Main'))
             .catch(function(error) {
               // Handle Errors here.
               var errorCode = error.code;
@@ -114,33 +116,49 @@ class Register extends Component<any> {
     }
 
 
+    goBack = () =>{
+      this.props.navigation.navigate('Login')
+    }
+
     render() {
         return (
-            <View style={styles.container}>
-                <Text>Register</Text>
-                <TextInput
+          <View style={styles.container}>
+            <Header
+                  centerComponent={{ text: 'Register New User', style: { color: 'grey' } }}
+                  leftComponent={
+                  <TouchableHighlight onPress={this.goBack}>
+                    <Text style={{textDecorationLine: 'underline', color: 'grey'}}>Back</Text>
+                  </TouchableHighlight>}
+                  containerStyle={{
+                    backgroundColor: '#D3D3D3',
+                    justifyContent: 'space-around',
+                    
+                  }}
+                  />
+            <View style={styles.content}>
+                <Text style = {{fontSize: 40, color: 'grey'}}>Register</Text>
+                <Input
                     value={this.state.name}
                     onChangeText={ name => this.setState({ name })}
                     placeholder='name'
                 />
-                <TextInput
+                <Input
                     value={this.state.email}
                     onChangeText={ email => this.setState({ email })}
                     placeholder='email'
                     autoCapitalize='none'
                 />
-                <TextInput
+                <Input
                     value={this.state.password}
                     onChangeText={ password => this.setState({ password })}
                     placeholder='password'
                     secureTextEntry={true}
                 />
                 <Button 
-                    title="Sign Up" onPress={() => this.handleSignup()}>
+                    title="Sign Up" onPress={() => this.handleSignup()}
+                    buttonStyle={{borderRadius: 4, backgroundColor:'#3cb371', margin: 5}}>
                 </Button>
-                <Button 
-                    title="Sign Up With Google" onPress={() => this.signInWithGoogleAsync()}>
-                </Button>
+            </View>
             </View>
         );
     }
@@ -148,9 +166,15 @@ class Register extends Component<any> {
 export default Register;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+  container: {
+    flex: 1,
+    backgroundColor: '#D3D3D3'
+  },
+    content: {
+      flex: 1,
+      padding: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#D3D3D3'
     }
 });

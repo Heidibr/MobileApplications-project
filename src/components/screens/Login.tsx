@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { 
     View,
     Text,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    Button
+    StyleSheet
+    
 } from "react-native";
+import { Input, Button, Icon} from 'react-native-elements';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
+
 
 class Login extends Component<any> {
     state = {
@@ -111,26 +111,31 @@ class Login extends Component<any> {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Login</Text>
-                <TextInput
+                <Text style = {{fontSize: 40, color: 'grey'}}>Welcome</Text>
+                <Input
                     value={this.state.email}
                     onChangeText={ email => this.setState({email})}
-                    placeholder='email'
+                    placeholder='Email'
                     autoCapitalize='none'
                 />
-                <TextInput
+                <Input
                     value={this.state.password}
                     onChangeText={ password => this.setState({password})}
                     placeholder='Password'
                     secureTextEntry={true}
                 />
-                <Button 
+                <Button
+                    buttonStyle={{borderRadius: 4, backgroundColor:'#3cb371', margin: 5}}
                     title="Login" onPress={() => this.handleLogin()}>
                 </Button>
-                <Button 
+                <Button
+                    
+                    buttonStyle={{borderRadius: 4, margin: 5, backgroundColor:'grey'}}
                     title="Login With Google" onPress={() => this.signInWithGoogleAsync()}>
                 </Button>
                 <Button 
+                    titleStyle={{textDecorationLine: 'underline', color: 'grey'}}
+                    buttonStyle={{borderRadius: 4, backgroundColor:'transparent', margin: 5}}
                     title="Register User" onPress={() => this.props.navigation.navigate('Register')}>
                 </Button>
             </View>
@@ -139,10 +144,15 @@ class Login extends Component<any> {
 }
 export default Login;
 
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 40,
         alignItems: 'center',
-        justifyContent: 'center'
-    }
+        justifyContent: 'center',
+        backgroundColor: '#D3D3D3'
+    }, 
+    
 });
