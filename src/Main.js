@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import uuid from 'uuid/v1';
 import {Header} from 'react-native-elements';
+import '@firebase/firestore';
+
 import SubTitle from './components/SubTitle';
 import Input from './components/Input';
 import List from './components/List';
@@ -18,7 +20,6 @@ import Button from './components/Button';
 
 
 const headerTitle = 'Todo';
-
 export default class Main extends React.Component {
 	state = {
 		inputValue: '',

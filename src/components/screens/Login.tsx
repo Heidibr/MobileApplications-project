@@ -21,7 +21,15 @@ class Login extends Component<any> {
         const {email, password} = this.state
         firebase.auth()
             .signInWithEmailAndPassword(email,password)
-            .then(() => this.props.navigation.navigate('Main'))
+            .then((result) => {
+              firebase
+                .database()
+                .ref('/users/' + result.user.uid)
+                .update({
+                  last_logged_in: Date.now()
+                });
+              this.props.navigation.navigate('Main')
+            })
             .catch(error => console.log(error))
     }
 
@@ -49,28 +57,20 @@ class Login extends Component<any> {
             // Build Firebase credential with the Google ID token.
             var credential = firebase.auth.GoogleAuthProvider.credential(
                  //ma kanskje endre id token
-                
                 googleUser.idToken,
                 googleUser.accessToken
             );
             // Sign in with credential from the Google user.
             firebase
-                .auth()
-                .signInWithCredential(credential)
-                .then(function(result) {
+              .auth()
+              .signInWithCredential(credential)
+              .then(function(result) {
                 firebase
-                    .auth()
-                    .signInAndRetrieveDataWithCredential(credential)
-                    .then(function(result) {
-                    console.log('user signed in ');
-                    firebase
-                        .database()
-                        .ref('/users/' + result.user.uid)
-                        .update({
-                          last_logged_in: Date.now()
+                  .database()
+                  .ref('/users/' + result.user.uid)
+                  .update({
+                  last_logged_in: Date.now()
                         });
-                    
-                  })
             })
             .catch(function(error) {
               // Handle Errors here.
@@ -91,7 +91,7 @@ class Login extends Component<any> {
     signInWithGoogleAsync = async() => {
         try {
           const result = await Google.logInAsync({
-            clientId: '1052881175304-390qapid19bugq6ee1t926o7ilniorru.apps.googleusercontent.com',
+            clientId: '145090313122-nfem2tqoupjp2r53enqason5ni5mtpuv.apps.googleusercontent.com',
             scopes: ['profile', 'email'],
             behavior: 'web'
           });
