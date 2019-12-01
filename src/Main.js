@@ -18,7 +18,7 @@ import Input from './components/Input';
 import List from './components/List';
 import Button from './components/Button';
 import firebase from 'firebase'
-import { object } from 'prop-types';
+
 
 
 const headerTitle = 'Todo';
@@ -140,7 +140,7 @@ export default class Main extends React.Component {
 
 	deleteAllItems = async () => {
 		try {
-			await AsyncStorage.removeItem('Todos');
+			await firebase.database().ref('/users/'+ this.state.currentUser + '/todos').remove()
 			this.setState({ allItems: {} });
 		} catch (err) {
 			console.log(err);
@@ -151,7 +151,7 @@ export default class Main extends React.Component {
 		firebase.database().ref('/users/'+ this.state.currentUser + '/todos').set({
 			todo: newItem
 		})
-		//const saveItem = AsyncStorage.setItem('Todos', JSON.stringify(newItem));
+		
 	};
 
 	//Fikse så denne fatsik logger personen ut, og ikke bare går til login siden
