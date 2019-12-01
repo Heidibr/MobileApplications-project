@@ -17,19 +17,31 @@ import SubTitle from './components/SubTitle';
 import Input from './components/Input';
 import List from './components/List';
 import Button from './components/Button';
+import firebase from 'firebase'
+import { object } from 'prop-types';
 
 
 const headerTitle = 'Todo';
 export default class Main extends React.Component {
+
 	state = {
 		inputValue: '',
 		loadingItems: false,
 		allItems: {},
-		isCompleted: false
+		isCompleted: false, 
+		currentUser: null
 	};
 
+
+	componentWillMount = () => {
+		var user = this.props.navigation.getParam('user', 'uid')
+		this.setState({
+			currentUser: user
+		})
+	}
 	componentDidMount = () => {
 		this.loadingItems();
+		console.log('componentdidmount', this.state.currentUser)
 	};
 
 	newInputValue = value => {
@@ -38,17 +50,18 @@ export default class Main extends React.Component {
 		});
 	};
 
-	loadingItems = async () => {
-		try {
-			const allItems = await AsyncStorage.getItem('Todos');
-			this.setState({
-				loadingItems: true,
-				allItems: JSON.parse(allItems) || {}
+	loadingItems = () => {
+			firebase.database().ref('/users/'+ this.state.currentUser + '/todos/todo').once('value', (snap) => {
+				console.log('etter tingen',snap.val())
+				let dataen = snap.val()
+				this.setState({
+					loadingItems: true,
+					allItems: {
+						...dataen
+					}
+				});
 			});
-		} catch (err) {
-			console.log(err);
-		}
-	};
+		};
 
 	onDoneAddItem = () => {
 		const { inputValue } = this.state;
@@ -73,11 +86,12 @@ export default class Main extends React.Component {
 				};
 				this.saveItems(newState.allItems);
 				return { ...newState };
-			});
+			}); 
 		}
 	};
 
 	deleteItem = id => {
+		
 		this.setState(prevState => {
 			const allItems = prevState.allItems;
 			delete allItems[id];
@@ -134,17 +148,21 @@ export default class Main extends React.Component {
 	};
 
 	saveItems = newItem => {
-		const saveItem = AsyncStorage.setItem('Todos', JSON.stringify(newItem));
+		firebase.database().ref('/users/'+ this.state.currentUser + '/todos').set({
+			todo: newItem
+		})
+		//const saveItem = AsyncStorage.setItem('Todos', JSON.stringify(newItem));
 	};
 
 	//Fikse så denne fatsik logger personen ut, og ikke bare går til login siden
 	signOut = () => {
+		
 		this.props.navigation.navigate('Login')
 	}
 
 	render() {
 		const { inputValue, loadingItems, allItems } = this.state;
-
+		console.log('state i render', allItems)
 		return (
 			<View style={styles.view}>
 				<StatusBar barStyle="light-content" />

@@ -13,24 +13,28 @@ import firebase from 'firebase';
 class Login extends Component<any> {
     state = {
         email: '',
-        password:''
+        password:'', 
+        currentUser: null
     }
-
 
     handleLogin = () => {
         const {email, password} = this.state
         firebase.auth()
             .signInWithEmailAndPassword(email,password)
             .then((result) => {
+              this.setState({currentUser: result.user.uid})
+              console.log(this.state.currentUser)
               firebase
                 .database()
                 .ref('/users/' + result.user.uid)
                 .update({
                   last_logged_in: Date.now()
                 });
-              this.props.navigation.navigate('Main')
+              
+              this.props.navigation.navigate('Main', {user: result.user.uid})
             })
             .catch(error => console.log(error))
+            
     }
 
     isUserEqual = (googleUser, firebaseUser) => {
@@ -52,6 +56,7 @@ class Login extends Component<any> {
         // We need to register an Observer on Firebase Auth to make sure auth is initialized.
         var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
           unsubscribe();
+          console.log('sjekk1')
           // Check if we are already signed-in Firebase with the correct user.
           if (!this.isUserEqual(googleUser, firebaseUser)) {
             // Build Firebase credential with the Google ID token.
@@ -59,17 +64,20 @@ class Login extends Component<any> {
                  //ma kanskje endre id token
                 googleUser.idToken,
                 googleUser.accessToken
+
             );
             // Sign in with credential from the Google user.
             firebase
               .auth()
               .signInWithCredential(credential)
               .then(function(result) {
+                console.log('sjekk2')
                 firebase
                   .database()
                   .ref('/users/' + result.user.uid)
                   .update({
                   last_logged_in: Date.now()
+                  
                         });
             })
             .catch(function(error) {
@@ -86,6 +94,7 @@ class Login extends Component<any> {
             console.log('User already signed-in Firebase.');
           }
         }.bind(this)); 
+        console.log('sjekk3')
       }
 
     signInWithGoogleAsync = async() => {
@@ -95,7 +104,7 @@ class Login extends Component<any> {
             scopes: ['profile', 'email'],
             behavior: 'web'
           });
-      
+            console.log('res', result)
             if (result.type === 'success') {
                 this.onSignIn(result); //send user to signIn to registrate
                 this.props.navigation.navigate('Main');
