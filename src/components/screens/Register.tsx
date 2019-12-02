@@ -31,7 +31,7 @@ class Register extends Component<any> {
           mail: result.user.email,
           created_at: Date.now()
         })
-        this.props.navigation.navigate('Main')
+        this.props.navigation.navigate('Main', {user: result.user.uid})
       })
       .catch(error => console.log(error))
     }

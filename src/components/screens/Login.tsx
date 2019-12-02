@@ -40,6 +40,7 @@ class Login extends Component<any> {
     isUserEqual = (googleUser, firebaseUser) => {
         if (firebaseUser) {
           var providerData = firebaseUser.providerData;
+          console.log('Finne uid for google bruker!!', providerData)
           for (var i = 0; i < providerData.length; i++) {
             if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
                 providerData[i].uid === googleUser.getBasicProfile().getId()) {
@@ -71,14 +72,12 @@ class Login extends Component<any> {
               .auth()
               .signInWithCredential(credential)
               .then(function(result) {
-                console.log('sjekk2')
                 firebase
                   .database()
                   .ref('/users/' + result.user.uid)
                   .update({
                   last_logged_in: Date.now()
-                  
-                        });
+                });
             })
             .catch(function(error) {
               // Handle Errors here.
@@ -93,9 +92,10 @@ class Login extends Component<any> {
           } else {
             console.log('User already signed-in Firebase.');
           }
-        }.bind(this)); 
-        console.log('sjekk3')
+        }.bind(this));
       }
+
+    
 
     signInWithGoogleAsync = async() => {
         try {
@@ -104,10 +104,19 @@ class Login extends Component<any> {
             scopes: ['profile', 'email'],
             behavior: 'web'
           });
-            console.log('res', result)
+            console.log('res!!!!!', result)
             if (result.type === 'success') {
                 this.onSignIn(result); //send user to signIn to registrate
-                this.props.navigation.navigate('Main');
+                firebase.auth().onAuthStateChanged((result) => {
+                  if (result) {
+                    // User logged in already or has just logged in.
+                    this.props.navigation.navigate('Main', {user: result.uid});
+                    console.log('SJEKK AV GOOOGLE SIGNED IN USER', result.uid);
+                  } else {
+                    // User not logged in or has just logged out.
+                    console.log('ikke logget inn bruker')
+                  }
+                });
                 return result.accessToken;
           } else {
             return { cancelled: true };
