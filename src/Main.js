@@ -19,7 +19,7 @@ import List from './components/List';
 import Button from './components/Button';
 import firebase from 'firebase'
 
-
+import * as Google from 'expo-google-app-auth';
 
 const headerTitle = 'Todo';
 export default class Main extends React.Component {
@@ -31,7 +31,6 @@ export default class Main extends React.Component {
 		isCompleted: false, 
 		currentUser: null
 	};
-
 
 	componentWillMount = () => {
 		var user = this.props.navigation.getParam('user', 'uid')
@@ -91,7 +90,6 @@ export default class Main extends React.Component {
 	};
 
 	deleteItem = id => {
-		
 		this.setState(prevState => {
 			const allItems = prevState.allItems;
 			delete allItems[id];
@@ -151,13 +149,19 @@ export default class Main extends React.Component {
 		firebase.database().ref('/users/'+ this.state.currentUser + '/todos').set({
 			todo: newItem
 		})
-		
 	};
 
-	//Fikse så denne fatsik logger personen ut, og ikke bare går til login siden
-	signOut = () => {
-		
-		this.props.navigation.navigate('Login')
+	signOut = async () => {
+		try{
+			firebase.auth().signOut().then(() => {
+				this.props.navigation.navigate('Login');
+			}, function (error){
+				console.log("Error while logging out: " + error);
+			});
+		}
+		catch(error){
+			console.log('NOE GIKK GALT: '+ error)
+		}
 	}
 
 	render() {
