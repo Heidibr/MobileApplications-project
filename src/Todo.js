@@ -174,14 +174,22 @@ export default class Todo extends React.Component {
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
 	async myCalendar() {  
-		let iOsCalendarConfig = {
-		  title: 'Expo Calendar',
-		color: 'blue',
-		entityType: Calendar.EntityTypes.EVENT,
-		name: 'internalCalendarName',
-		ownerAccount: 'personal',
-		accessLevel: Calendar.CalendarAccessLevel.OWNER,
-		}
+		useEffect(() => {
+			(async () => {
+			  const { check } = await Calendar.getCalendarPermissionsAsync();
+			  if (check === 'granted') {
+				const calendars = await Calendar.getCalendarsAsync();
+				console.log('Here are all your calendars:');
+				console.log({ calendars });
+			  }
+			  const { status } = await Calendar.requestCalendarPermissionsAsync();
+			  if (status === 'granted') {
+				const calendars = await Calendar.getCalendarsAsync();
+				console.log('Here are all your calendars:');
+				console.log({ calendars });
+			  }
+			})();
+		  }, []);
 	
 		const getEventsCalendars = () => {
 		  return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
