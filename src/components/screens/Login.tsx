@@ -31,7 +31,7 @@ class Login extends Component<any> {
                   last_logged_in: Date.now()
                 });
               
-              this.props.navigation.navigate('Main', {user: result.user.uid})
+              this.props.navigation.navigate('Todo', {user: result.user.uid})
             })
             .catch(error => console.log(error))
             
@@ -110,7 +110,7 @@ class Login extends Component<any> {
                 firebase.auth().onAuthStateChanged((result) => {
                   if (result) {
                     // User logged in already or has just logged in.
-                    this.props.navigation.navigate('Main', {user: result.uid});
+                    this.props.navigation.navigate('Todo', {user: result.uid});
                     console.log('SJEKK AV GOOOGLE SIGNED IN USER', result.uid);
                   } else {
                     // User not logged in or has just logged out.

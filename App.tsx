@@ -1,10 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import ApiKeys from './src/constants/ApiKeys';
-import HeaderApp from './src/components/HeaderApp';
-import Login from './src/components/screens/Login';
 import SwitchNavigator from './src/components/navigation/SwitchNavigation'
-
 import * as firebase from 'firebase';
 import {firebaseConfig} from './config/firebaseConfig';
 

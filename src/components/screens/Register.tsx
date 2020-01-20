@@ -5,7 +5,7 @@ import {
     StyleSheet,
     TouchableHighlight
 } from "react-native";
-import Main from "../../Main";
+import Todo from "../../Todo";
 import firebase from 'firebase';
 import * as Google from 'expo-google-app-auth';
 import { Input, Button, Header, Icon} from 'react-native-elements';
@@ -31,7 +31,7 @@ class Register extends Component<any> {
           mail: result.user.email,
           created_at: Date.now()
         })
-        this.props.navigation.navigate('Main', {user: result.user.uid})
+        this.props.navigation.navigate('Todo', {user: result.user.uid})
       })
       .catch(error => console.log(error))
     }
@@ -76,7 +76,7 @@ class Register extends Component<any> {
                 created_at: Date.now()
               })              
             })
-            .then(() => this.props.navigation.navigate('Main'))
+            .then(() => this.props.navigation.navigate('Todo'))
             .catch(function(error) {
               // Handle Errors here.
               var errorCode = error.code;
@@ -102,7 +102,7 @@ class Register extends Component<any> {
           });
             if (result.type === 'success') {
                 this.onSignIn(result); //send user to signIn to registrate
-                this.props.navigation.navigate('Main');
+                this.props.navigation.navigate('Todo');
                 return result.accessToken;
           } else {
             return { cancelled: true };

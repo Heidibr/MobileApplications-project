@@ -10,7 +10,9 @@
   "dependencies": {
     "@react-native-firebase/app": "^6.0.4",
     "@react-native-firebase/firestore": "^6.0.4",
+    "app-root": "^3.0.0",
     "expo": "^35.0.0",
+    "expo-calendar": "^8.0.0",
     "expo-google-app-auth": "^7.0.0",
     "expo-google-sign-in": "~7.0.0",
     "firebase": "^7.2.3",
@@ -18,8 +20,12 @@
     "native-base": "^2.13.8",
     "react": "16.8.3",
     "react-dom": "16.8.3",
+    "react-google-calendar-api": "^1.0.11",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+    "react-native-elements": "^1.2.7",
     "react-native-gesture-handler": "~1.3.0",
+    "react-native-screen-orientation-listener": "^1.0.4",
+    "react-native-unimodules": "^0.7.0",
     "react-native-web": "^0.11.7",
     "react-navigation": "^4.0.10",
     "ws": "^7.2.0"

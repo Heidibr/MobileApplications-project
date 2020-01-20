@@ -3,13 +3,13 @@ import {createSwitchNavigator, createAppContainer} from 'react-navigation';
 
 import Login from '../screens/Login';
 import Register from '../screens/Register';
-import Main from '../../Main';
+import Todo from '../../Todo';
 
 const SwitchNavigator = createSwitchNavigator(
     {
         Login: {screen: Login},
         Register: {screen: Register},
-        Main: {screen: Main}
+        Todo: {screen: Todo}
     },
     {
         initialRouteName: 'Login'

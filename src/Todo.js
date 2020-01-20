@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-	StyleSheet,
-	View,
-	StatusBar,
-	ActivityIndicator,
-	ScrollView,
-	AsyncStorage, 
-	TouchableHighlight, 
-	Text
-} from 'react-native';
+import {StyleSheet, View, StatusBar, ActivityIndicator, ScrollView, AsyncStorage, TouchableHighlight, Text} from 'react-native';
 import uuid from 'uuid/v1';
 import {Header} from 'react-native-elements';
 import '@firebase/firestore';
@@ -19,10 +10,10 @@ import List from './components/List';
 import Button from './components/Button';
 import firebase from 'firebase'
 
-
+import * as Calendar from 'expo-calendar';
 
 const headerTitle = 'Todo';
-export default class Main extends React.Component {
+export default class Todo extends React.Component {
 
 	state = {
 		inputValue: '',
