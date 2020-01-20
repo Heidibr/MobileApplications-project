@@ -20,10 +20,9 @@ import Input from './components/Input';
 import List from './components/List';
 import Button from './components/Button';
 import firebase from 'firebase'
-import * as Google from 'expo-google-app-auth';
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
-import calend from '../src/components/screens/Calendar';
+
 
 const headerTitle = 'Todo';
 
@@ -174,6 +173,10 @@ export default class Main extends React.Component {
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
 	async myCalendar() {  
+		const { status } = await Permissions.getAsync(Permissions.CALENDAR)
+		if (status !== 'granted') {
+			alert('Hey! You might want to enable calendar for my app, they are good.');
+		  }
 		let iOsCalendarConfig = {
 		  title: 'Expo Calendar',
 		color: 'blue',
