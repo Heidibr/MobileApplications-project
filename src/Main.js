@@ -174,42 +174,48 @@ export default class Main extends React.Component {
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
 	async myCalendar() {  
-		let iOsCalendarConfig = {
-		  title: 'Expo Calendar',
-		color: 'blue',
-		entityType: Calendar.EntityTypes.EVENT,
-		name: 'internalCalendarName',
-		ownerAccount: 'personal',
-		accessLevel: Calendar.CalendarAccessLevel.OWNER,
-		}
-	
-		const getEventsCalendars = () => {
-		  return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
-		}
-	
+
+		const { status } = await Calendar.requestCalendarPermissionsAsync();
+      	if (status === 'granted') {
+			let iOsCalendarConfig = {
+			title: 'Expo Calendar',
+			color: 'blue',
+			entityType: Calendar.EntityTypes.EVENT,
+			name: 'internalCalendarName',
+			ownerAccount: 'personal',
+			accessLevel: Calendar.CalendarAccessLevel.OWNER,
+			}
 		
-		let osConfig;
-	  
-		const calendars = await getEventsCalendars()
-		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
-		osConfig = iOsCalendarConfig;
-		// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
-		osConfig.sourceId = caldavCalendar.source.id
-		osConfig.source = caldavCalendar.source
-		console.log(osConfig.sourceId)
-	
-		Calendar.createCalendarAsync(osConfig)
-		  .then( event => {
-			this.setState({ results: event });
-		  })
-		  .catch( error => {
-			this.setState({ results: error });
-		  });
-	  
-	
-	  
-	
+			const getEventsCalendars = () => {
+			return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+			}
+		
+			
+			let osConfig;
+		
+			const calendars = await getEventsCalendars()
+			const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
+			osConfig = iOsCalendarConfig;
+			// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
+			//Dette er ID-en til kalenderen, så dette trenger man egentlig bare en gang også kan man bruke denne til å lage events tror ejg
+			osConfig.sourceId = caldavCalendar.source.id
+			osConfig.source = caldavCalendar.source
+			console.log(osConfig.sourceId)
+		
+			Calendar.createCalendarAsync(osConfig)
+			.then( event => {
+				this.setState({ results: event });
+			})
+			.catch( error => {
+				this.setState({ results: error });
+			});
+		  } else {
+			  console.log("permisson not granted")
+		  }
+		
 	  }
+
+	  createEvent( )
 
 	render() {
 		const { inputValue, loadingItems, allItems } = this.state;
