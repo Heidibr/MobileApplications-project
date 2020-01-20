@@ -171,58 +171,44 @@ export default class Main extends React.Component {
 		}
 	}
 
-	myCalendar = () => {
-		if(!this.state.calendarObject){
-			this.createCalendar();
-			this.setState({calendarObject: true})
-		}else{
-			const event = new Map();
-			event.set('title',"lage pizza")
-			event.set('startDate', new Date());
-			event.set('endDate', new Date);
-			console.log(`the calendarid is: ${this.calendarID}`)
-			Calendar.createEventAsync(this.state.calendarID, event)
-			const events = Calendar.getEventsAsync([this.calendarID], "2020-01-19T17:26:11.446Z", "2021-01-19T17:26:11.446Z")
-			console.log(events)
-		}
-	}
+///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
-	getEventsCalendars = () => {
-		return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
-	}
-
-	async createCalendar() {
-		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-		if (status !== 'granted') {
-		  console.warn('NOT GRANTED');
-		  return;
-		}
+	async myCalendar() {  
 		let iOsCalendarConfig = {
-			title: 'ny kalender',
-		    color: 'blue',
-		  	entityType: Calendar.EntityTypes.EVENT,
-		  	name: 'internalCalendarName',
-		  	ownerAccount: 'personal',
-		  	accessLevel: Calendar.CalendarAccessLevel.OWNER,
+		  title: 'Expo Calendar',
+		color: 'blue',
+		entityType: Calendar.EntityTypes.EVENT,
+		name: 'internalCalendarName',
+		ownerAccount: 'personal',
+		accessLevel: Calendar.CalendarAccessLevel.OWNER,
 		}
-		const calendars = await this.getEventsCalendars();
-   		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav");
+	
+		const getEventsCalendars = () => {
+		  return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+		}
+	
+		
 		let osConfig;
+	  
+		const calendars = await getEventsCalendars()
+		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
 		osConfig = iOsCalendarConfig;
-		osConfig.sourceId = caldavCalendar.source.id;
-		osConfig.source = caldavCalendar.source;
+		// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
+		osConfig.sourceId = caldavCalendar.source.id
+		osConfig.source = caldavCalendar.source
+		console.log(osConfig.sourceId)
+	
 		Calendar.createCalendarAsync(osConfig)
-   		    .then( event => {
-				console.log(event)
-				this.setState({ calendarID: event });
-				this.setState({ calendarCreated: true })
-
-      			})
-      		.catch( error => {
-				console.log("Error while trying to create calendar: "+error)
-      });
-		console.log("calendar created")
-		console.log(`The new calendar id is: ${this.calendarID}`)
+		  .then( event => {
+			this.setState({ results: event });
+		  })
+		  .catch( error => {
+			this.setState({ results: error });
+		  });
+	  
+	
+	  
+	
 	  }
 
 	render() {
