@@ -20,7 +20,6 @@ import Input from './components/Input';
 import List from './components/List';
 import Button from './components/Button';
 import firebase from 'firebase'
-import * as Google from 'expo-google-app-auth';
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 
@@ -174,6 +173,50 @@ export default class Todo extends React.Component {
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
 	async myCalendar() {  
+<<<<<<< HEAD:src/Todo.js
+
+		const { status } = await Calendar.requestCalendarPermissionsAsync();
+      	if (status === 'granted') {
+			let iOsCalendarConfig = {
+			title: 'Expo Calendar',
+			color: 'blue',
+			entityType: Calendar.EntityTypes.EVENT,
+			name: 'internalCalendarName',
+			ownerAccount: 'personal',
+			accessLevel: Calendar.CalendarAccessLevel.OWNER,
+			}
+		
+			const getEventsCalendars = () => {
+			return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+			}
+		
+			
+			let osConfig;
+		
+			const calendars = await getEventsCalendars()
+			const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
+			osConfig = iOsCalendarConfig;
+			// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
+			//Dette er ID-en til kalenderen, så dette trenger man egentlig bare en gang også kan man bruke denne til å lage events tror ejg
+			osConfig.sourceId = caldavCalendar.source.id
+			osConfig.source = caldavCalendar.source
+			console.log(osConfig.sourceId)
+		
+			Calendar.createCalendarAsync(osConfig)
+			.then( event => {
+				this.setState({ results: event });
+			})
+			.catch( error => {
+				this.setState({ results: error });
+			});
+		  } else {
+			  console.log("permisson not granted")
+		  }
+=======
+		const { status } = await Permissions.getAsync(Permissions.CALENDAR)
+		if (status !== 'granted') {
+			alert('Hey! You might want to enable calendar for my app, they are good.');
+		  }
 		let iOsCalendarConfig = {
 		  title: 'Expo Calendar',
 		color: 'blue',
@@ -187,29 +230,11 @@ export default class Todo extends React.Component {
 		  return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
 		}
 	
+>>>>>>> ab886d77f21c7b89cd75d5f3aa593e36b8f5ea1a:src/Main.js
 		
-		let osConfig;
-	  
-		const calendars = await getEventsCalendars()
-		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
-		osConfig = iOsCalendarConfig;
-		// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
-		osConfig.sourceId = caldavCalendar.source.id
-		osConfig.source = caldavCalendar.source
-		console.log(osConfig.sourceId)
-	
-		Calendar.createCalendarAsync(osConfig)
-		  .then( event => {
-			this.setState({ results: event });
-		  })
-		  .catch( error => {
-			this.setState({ results: error });
-		  });
-	  
-	
-	  
-	
 	  }
+
+	  createEvent( )
 
 	render() {
 		const { inputValue, loadingItems, allItems } = this.state;
