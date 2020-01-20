@@ -2,13 +2,11 @@ import React, { Component } from "react";
 import { 
     View,
     Text,
-    StyleSheet
-    
+    StyleSheet    
 } from "react-native";
 import { Input, Button, Icon} from 'react-native-elements';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
-
 
 class Login extends Component<any> {
     state = {
@@ -16,25 +14,22 @@ class Login extends Component<any> {
         password:'', 
         currentUser: null
     }
-
     handleLogin = () => {
         const {email, password} = this.state
         firebase.auth()
             .signInWithEmailAndPassword(email,password)
             .then((result) => {
               this.setState({currentUser: result.user.uid})
-              console.log(this.state.currentUser)
               firebase
                 .database()
                 .ref('/users/' + result.user.uid)
                 .update({
-                  last_logged_in: Date.now()
+                  last_logged_in: (new Date())
                 });
               
               this.props.navigation.navigate('Todo', {user: result.user.uid})
             })
             .catch(error => console.log(error))
-            
     }
 
     isUserEqual = (googleUser, firebaseUser) => {
@@ -76,7 +71,7 @@ class Login extends Component<any> {
                   .database()
                   .ref('/users/' + result.user.uid)
                   .update({
-                  last_logged_in: Date.now()
+                  last_logged_in: (new Date())
                 });
             })
             .catch(function(error) {
@@ -95,8 +90,6 @@ class Login extends Component<any> {
         }.bind(this));
       }
 
-    
-
     signInWithGoogleAsync = async() => {
         try {
           const result = await Google.logInAsync({
@@ -114,7 +107,7 @@ class Login extends Component<any> {
                     console.log('SJEKK AV GOOOGLE SIGNED IN USER', result.uid);
                   } else {
                     // User not logged in or has just logged out.
-                    console.log('ikke logget inn bruker')
+                    console.log('Bruker logget ut')
                   }
                 });
                 return result.accessToken;
@@ -147,7 +140,6 @@ class Login extends Component<any> {
                     title="Login" onPress={() => this.handleLogin()}>
                 </Button>
                 <Button
-                    
                     buttonStyle={{borderRadius: 4, margin: 5, backgroundColor:'grey'}}
                     title="Login With Google" onPress={() => this.signInWithGoogleAsync()}>
                 </Button>
@@ -160,9 +152,8 @@ class Login extends Component<any> {
         );
     }
 }
+
 export default Login;
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -172,5 +163,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#D3D3D3'
     }, 
-    
 });

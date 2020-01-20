@@ -1,5 +1,16 @@
-import React from 'react';
-import {StyleSheet, View, StatusBar, ActivityIndicator, ScrollView, AsyncStorage, TouchableHighlight, Text} from 'react-native';
+import React, { useEffect } from 'react';
+import {
+	StyleSheet,
+	View,
+	StatusBar,
+	ActivityIndicator,
+	ScrollView,
+	AsyncStorage, 
+	TouchableHighlight, 
+	Text,
+	PermissionsAndroid,
+	Platform
+} from 'react-native';
 import uuid from 'uuid/v1';
 import {Header} from 'react-native-elements';
 import '@firebase/firestore';
@@ -9,20 +20,23 @@ import Input from './components/Input';
 import List from './components/List';
 import Button from './components/Button';
 import firebase from 'firebase'
-
 import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
+
 
 const headerTitle = 'Todo';
-export default class Todo extends React.Component {
 
+export default class Todo extends React.Component {
 	state = {
 		inputValue: '',
 		loadingItems: false,
 		allItems: {},
 		isCompleted: false, 
-		currentUser: null
+		currentUser: null,
+		calendarCreated: false,
+		calendarID: '',
+		results:[]
 	};
-
 
 	componentWillMount = () => {
 		var user = this.props.navigation.getParam('user', 'uid')
@@ -33,7 +47,7 @@ export default class Todo extends React.Component {
 	componentDidMount = () => {
 		this.loadingItems();
 		console.log('componentdidmount', this.state.currentUser)
-	};
+	}
 
 	newInputValue = value => {
 		this.setState({
@@ -82,7 +96,6 @@ export default class Todo extends React.Component {
 	};
 
 	deleteItem = id => {
-		
 		this.setState(prevState => {
 			const allItems = prevState.allItems;
 			delete allItems[id];
@@ -142,14 +155,60 @@ export default class Todo extends React.Component {
 		firebase.database().ref('/users/'+ this.state.currentUser + '/todos').set({
 			todo: newItem
 		})
-		
 	};
 
-	//Fikse så denne fatsik logger personen ut, og ikke bare går til login siden
-	signOut = () => {
-		
-		this.props.navigation.navigate('Login')
+	signOut = async () => {
+		try{
+			firebase.auth().signOut().then(() => {
+				this.props.navigation.navigate('Login');
+			}, function (error){
+				console.log("Error while logging out: " + error);
+			});
+		}
+		catch(error){
+			console.log('NOE GIKK GALT: '+ error)
+		}
 	}
+
+///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
+
+	async myCalendar() {  
+		let iOsCalendarConfig = {
+		  title: 'Expo Calendar',
+		color: 'blue',
+		entityType: Calendar.EntityTypes.EVENT,
+		name: 'internalCalendarName',
+		ownerAccount: 'personal',
+		accessLevel: Calendar.CalendarAccessLevel.OWNER,
+		}
+	
+		const getEventsCalendars = () => {
+		  return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+		}
+	
+		
+		let osConfig;
+	  
+		const calendars = await getEventsCalendars()
+		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
+		osConfig = iOsCalendarConfig;
+		// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
+		osConfig.sourceId = caldavCalendar.source.id
+		osConfig.source = caldavCalendar.source
+		console.log(osConfig.sourceId)
+	
+		Calendar.createCalendarAsync(osConfig)
+		  .then( event => {
+			this.setState({ results: event });
+		  })
+		  .catch( error => {
+			this.setState({ results: error });
+		  });
+	  
+	
+	  
+	
+	  }
 
 	render() {
 		const { inputValue, loadingItems, allItems } = this.state;
@@ -158,10 +217,17 @@ export default class Todo extends React.Component {
 			<View style={styles.view}>
 				<StatusBar barStyle="light-content" />
 				<View style={styles.centered}>
-					<Header title={headerTitle} 
+				<Header title={headerTitle} 
 					rightComponent={
 						<TouchableHighlight onPress={this.signOut}>
-						  <Text style={{textDecorationLine: 'underline', color: 'grey'}}>Sign Out</Text>
+						  <Text style={{textDecorationLine: 'underline', color: 'green'}}>Sign Out</Text>
+						</TouchableHighlight>}
+						containerStyle={{
+							backgroundColor: '#D3D3D3',
+							justifyContent: 'space-around'}}
+					leftComponent={
+						<TouchableHighlight onPress={async () => await this.myCalendar()}>
+						  <Text style={{textDecorationLine: 'underline', color: 'pink'}}>Calendar</Text>
 						</TouchableHighlight>}
 						containerStyle={{
 							backgroundColor: '#D3D3D3',

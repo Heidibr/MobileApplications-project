@@ -29,7 +29,7 @@ class Register extends Component<any> {
         .ref('/users/' + result.user.uid)
         .set({
           mail: result.user.email,
-          created_at: Date.now()
+          created_at: (new Date())
         })
         this.props.navigation.navigate('Todo', {user: result.user.uid})
       })
@@ -73,7 +73,7 @@ class Register extends Component<any> {
               .ref('/users/' + result.user.uid)
               .set({
                 gmail: result.user.email,
-                created_at: Date.now()
+                created_at: (new Date())
               })              
             })
             .then(() => this.props.navigation.navigate('Todo'))
