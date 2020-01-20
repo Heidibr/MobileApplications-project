@@ -50,6 +50,7 @@ class Register extends Component<any> {
     return false;
   }
 
+  //Denne trenger vi ikke
   onSignIn = (googleUser) => {
     console.log('Google Auth Response', googleUser);
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
@@ -93,6 +94,7 @@ class Register extends Component<any> {
         }.bind(this)); 
       }
 
+    //Denne trenger vi ikke
     signInWithGoogleAsync = async() => {
         try {
           const result = await Google.logInAsync({

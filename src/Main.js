@@ -168,6 +168,10 @@ export default class Main extends React.Component {
 				<StatusBar barStyle="light-content" />
 				<View style={styles.centered}>
 					<Header title={headerTitle} 
+					leftComponent = {
+						<TouchableHighlight onPress={this.viewCalender}>
+						  <Text style={{textDecorationLine: 'underline', color: 'grey'}}>Calender</Text>
+						</TouchableHighlight>}
 					rightComponent={
 						<TouchableHighlight onPress={this.signOut}>
 						  <Text style={{textDecorationLine: 'underline', color: 'grey'}}>Sign Out</Text>
