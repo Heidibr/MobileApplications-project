@@ -9,7 +9,7 @@ const SwitchNavigator = createSwitchNavigator(
     {
         Login: {screen: Login},
         Register: {screen: Register},
-        Main: {screen: Main}
+        Main: {screen: Main},
     },
     {
         initialRouteName: 'Login'

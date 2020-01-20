@@ -6,7 +6,7 @@ import {
     TouchableHighlight
 } from "react-native";
 import Main from "../../Main";
-import firebase from 'firebase';
+import firebase, { database } from 'firebase';
 import * as Google from 'expo-google-app-auth';
 import { Input, Button, Header, Icon} from 'react-native-elements';
 
@@ -29,7 +29,7 @@ class Register extends Component<any> {
         .ref('/users/' + result.user.uid)
         .set({
           mail: result.user.email,
-          created_at: Date.now()
+          created_at: (new Date())
         })
         this.props.navigation.navigate('Main', {user: result.user.uid})
       })
@@ -73,7 +73,7 @@ class Register extends Component<any> {
               .ref('/users/' + result.user.uid)
               .set({
                 gmail: result.user.email,
-                created_at: Date.now()
+                created_at: (new Date())
               })              
             })
             .then(() => this.props.navigation.navigate('Main'))

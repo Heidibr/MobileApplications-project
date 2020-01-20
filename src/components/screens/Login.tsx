@@ -20,7 +20,6 @@ class Login extends Component<any> {
             .signInWithEmailAndPassword(email,password)
             .then((result) => {
               this.setState({currentUser: result.user.uid})
-              console.log(this.state.currentUser)
               firebase
                 .database()
                 .ref('/users/' + result.user.uid)
