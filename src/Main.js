@@ -23,12 +23,12 @@ import firebase from 'firebase'
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 
-async function alertIfRemoteNotificationsDisabledAsync() {
+/*async function alertIfRemoteNotificationsDisabledAsync() {
 	const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status !== 'granted') {
         alert("funker ikke")
   }
-}
+}*/
 const headerTitle = 'Todo';
 
 export default class Main extends React.Component {
@@ -49,8 +49,6 @@ export default class Main extends React.Component {
 		this.setState({
 			currentUser: user
 		})
-
-		alertIfRemoteNotificationsDisabledAsync()
 		
 	}
 	componentDidMount = () => {
@@ -181,45 +179,79 @@ export default class Main extends React.Component {
 
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
-	async myCalendar() {  
-		
-		let iOsCalendarConfig = {
-		  title: 'Expo Calendar',
-		color: 'blue',
-		entityType: Calendar.EntityTypes.EVENT,
-		name: 'internalCalendarName',
-		ownerAccount: 'personal',
-		accessLevel: Calendar.CalendarAccessLevel.OWNER,
+async myCalendar() {
+	if(!this.state.calendarObject){
+		this.createCalendar();
+		this.setState({calendarObject: true})
+	}else{
+		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+		if (status === 'granted') {
+		  //const calendars = await Calendar.getCalendarsAsync();
+		  //console.log(calendars);
+		  event = {
+			title: 'lage Pizza',
+			startDate: new Date("2020-01-23T17:30:00Z"),
+			endDate: new Date("2020-01-23T18:30:00Z")
 		}
-	
-		const getEventsCalendars = () => {
-		  return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+		  let result = await Calendar.createEventAsync(this.state.calendarID, event);
+		  console.log(result);
 		}
-	
-		
-		let osConfig;
-	  
-		const calendars = await getEventsCalendars()
-		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav")
-		osConfig = iOsCalendarConfig;
-		// Sources can't be made up on iOS. We find the first one of type caldav (most common internet standard)
-		osConfig.sourceId = caldavCalendar.source.id
-		osConfig.source = caldavCalendar.source
-		console.log(osConfig.sourceId)
-	
-		Calendar.createCalendarAsync(osConfig)
-		  .then( event => {
-			this.setState({ results: event });
-		  })
-		  .catch( error => {
-			this.setState({ results: error });
-		  });
-	  
-	
-	  
-	
-	  }
+		/*const event = {};
+		event = {
+			title: 'lage Pizza',
+			startDate: new Date("2020-01-23 10:30:00"),
+			endDate: new Date("2020-01-23 12:30:00")
+		}
+		/* event.set('title',"lage pizza")
+		event.set('startDate', new Date("2020-01-23 10:30:00"));
+		event.set('endDate', new Date("2020-01-23 12:30:00"));
+		console.log('the calendarid is:', this.state.calendarID)
+		Calendar.createEventAsync(this.state.calendarID, event)
+		console.log('event som skal lages', event)
+		const events = Calendar.getEventsAsync([this.calendarID], "2020-01-19T17:26:11.446Z", "2021-01-19T17:26:11.446Z")
+		console.log('events',events)*/
+	}
+}
 
+getEventsCalendars = () => {
+	return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+}
+
+async createCalendar() {
+	const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+	if (status !== 'granted') {
+	  console.warn('NOT GRANTED');
+	  alert("no calendar premission")
+	  return;
+	}
+	let iOsCalendarConfig = {
+		title: 'ny kalender',
+		color: 'blue',
+		  entityType: Calendar.EntityTypes.EVENT,
+		  name: 'internalCalendarName',
+		  ownerAccount: 'personal',
+		  accessLevel: Calendar.CalendarAccessLevel.ROOT,
+	}
+	const calendars = await this.getEventsCalendars();
+	   const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav");
+	let osConfig;
+	osConfig = iOsCalendarConfig;
+	osConfig.sourceId = caldavCalendar.source.id;
+	osConfig.source = caldavCalendar.source;
+	Calendar.createCalendarAsync(osConfig)
+		   .then( event => {
+			console.log(event)
+			this.setState({ calendarID: event });
+			this.setState({ calendarCreated: true })
+
+			  })
+		  .catch( error => {
+			console.log("Error while trying to create calendar: "+error)
+  });
+	console.log("calendar created")
+	console.log(`The new calendar id is: ${this.calendarID}`)
+  }
+	  
 	render() {
 		const { inputValue, loadingItems, allItems } = this.state;
 		console.log('state i render', allItems)
