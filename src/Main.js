@@ -39,10 +39,9 @@ export default class Main extends React.Component {
 		isCompleted: false, 
 		currentUser: null,
 		calendarCreated: false,
-		calendarID: '',
+		calendarId: '',
 		results:[]
 	};
-	
 
 	componentWillMount = () => {
 		var user = this.props.navigation.getParam('user', 'uid')
@@ -51,8 +50,10 @@ export default class Main extends React.Component {
 		})
 		
 	}
+
 	componentDidMount = () => {
 		this.loadingItems();
+		this.loadingCalendarItems();
 		console.log('componentdidmount', this.state.currentUser)
 	}
 
@@ -71,6 +72,16 @@ export default class Main extends React.Component {
 					allItems: {
 						...dataen
 					}
+				});
+			});
+		};
+
+	loadingCalendarItems = () => {
+			firebase.database().ref('/users/'+ this.state.currentUser + '/calendar').once('value', (snap) => {
+				let dataen = snap.val()
+				this.setState({
+					calendarCreated: dataen.calendarCreated,
+					calendarId: dataen.calendarId
 				});
 			});
 		};
@@ -179,78 +190,76 @@ export default class Main extends React.Component {
 
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
-async myCalendar() {
-	if(!this.state.calendarObject){
-		this.createCalendar();
-		this.setState({calendarObject: true})
-	}else{
+	saveCalendarToDb = () => {
+		firebase.database().ref('/users/'+ this.state.currentUser + '/calendar').set({
+			calendarCreated: this.state.calendarCreated,
+			calendarId: this.state.calendarId
+		});
+	};
+
+	async addToDoToCalender(todoData) {
+		if(!this.state.calendarCreated){
+			this.createCalendar();
+			this.saveCalendarToDb()
+		}
 		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
 		if (status === 'granted') {
-		  //const calendars = await Calendar.getCalendarsAsync();
-		  //console.log(calendars);
-		  event = {
-			title: 'lage Pizza',
-			startDate: new Date("2020-01-23T17:30:00Z"),
-			endDate: new Date("2020-01-23T18:30:00Z")
-		}
-		  let result = await Calendar.createEventAsync(this.state.calendarID, event);
-		  console.log(result);
-		}
+			event = {
+				title: 'lage Pizza',
+				startDate: new Date("2020-01-23T17:30:00Z"),
+				endDate: new Date("2020-01-23T18:30:00Z")
+			}	
+		  	let result = await Calendar.createEventAsync(this.state.calendarId, event);
+		  	console.log(result);
+		}	
 		/*const event = {};
-		event = {
-			title: 'lage Pizza',
-			startDate: new Date("2020-01-23 10:30:00"),
-			endDate: new Date("2020-01-23 12:30:00")
-		}
 		/* event.set('title',"lage pizza")
 		event.set('startDate', new Date("2020-01-23 10:30:00"));
 		event.set('endDate', new Date("2020-01-23 12:30:00"));
 		console.log('the calendarid is:', this.state.calendarID)
 		Calendar.createEventAsync(this.state.calendarID, event)
-		console.log('event som skal lages', event)
+    	console.log('event som skal lages', event)
 		const events = Calendar.getEventsAsync([this.calendarID], "2020-01-19T17:26:11.446Z", "2021-01-19T17:26:11.446Z")
 		console.log('events',events)*/
 	}
-}
 
-getEventsCalendars = () => {
-	return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
-}
+	getEventsCalendars = () => {
+		return Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+	}
 
-async createCalendar() {
-	const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-	if (status !== 'granted') {
-	  console.warn('NOT GRANTED');
-	  alert("no calendar premission")
-	  return;
-	}
-	let iOsCalendarConfig = {
-		title: 'ny kalender',
-		color: 'blue',
-		  entityType: Calendar.EntityTypes.EVENT,
-		  name: 'internalCalendarName',
-		  ownerAccount: 'personal',
-		  accessLevel: Calendar.CalendarAccessLevel.ROOT,
-	}
-	const calendars = await this.getEventsCalendars();
-	   const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav");
-	let osConfig;
-	osConfig = iOsCalendarConfig;
-	osConfig.sourceId = caldavCalendar.source.id;
-	osConfig.source = caldavCalendar.source;
-	Calendar.createCalendarAsync(osConfig)
+	async createCalendar() {
+		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+		if (status !== 'granted') {
+		  	console.warn('NOT GRANTED');
+		  	alert("no calendar premission")
+		  	return;
+		}	
+		let iOsCalendarConfig = {
+			title: 'ny kalender',
+			color: 'blue',
+			entityType: Calendar.EntityTypes.EVENT,
+		 	name: 'internalCalendarName',
+			ownerAccount: 'personal',
+		    accessLevel: Calendar.CalendarAccessLevel.ROOT,
+		}
+		const calendars = await this.getEventsCalendars();
+		const caldavCalendar = calendars.find(calendar => calendar.source.type == "caldav");
+		let osConfig;
+		osConfig = iOsCalendarConfig;
+		osConfig.sourceId = caldavCalendar.source.id;
+		osConfig.source = caldavCalendar.source;
+		Calendar.createCalendarAsync(osConfig)
 		   .then( event => {
 			console.log(event)
-			this.setState({ calendarID: event });
+			this.setState({ calendarId: event });
 			this.setState({ calendarCreated: true })
-
-			  })
-		  .catch( error => {
-			console.log("Error while trying to create calendar: "+error)
-  });
-	console.log("calendar created")
-	console.log(`The new calendar id is: ${this.calendarID}`)
-  }
+			})
+		  	.catch( error => {
+				console.log("Error while trying to create calendar: "+error)
+  			});
+		console.log("calendar created")
+		console.log(`The new calendar id is: ${this.calendarId}`)
+ 	}
 	  
 	render() {
 		const { inputValue, loadingItems, allItems } = this.state;
@@ -268,7 +277,7 @@ async createCalendar() {
 							backgroundColor: '#D3D3D3',
 							justifyContent: 'space-around'}}
 					leftComponent={
-						<TouchableHighlight onPress={async () => await this.myCalendar()}>
+						<TouchableHighlight onPress={async () => await this.addToDoToCalender()}>
 						  <Text style={{textDecorationLine: 'underline', color: 'pink'}}>Calendar</Text>
 						</TouchableHighlight>}
 						containerStyle={{
@@ -313,7 +322,6 @@ async createCalendar() {
 		);
 	}
 }
-
 const styles = StyleSheet.create({
 	view: {
 		backgroundColor: '#D3D3D3',
