@@ -267,7 +267,7 @@ async createCalendar() {
 
 ///////////////////////// Code for adding deadline to items\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
-setDate = (event, date) => {
+setDate = (id, date) => {
     date = date || this.state.date;
 
     this.setState({
@@ -328,20 +328,6 @@ setDate = (event, date) => {
 						<View style={styles.deleteAllButton}>
 							<ButtonD deleteAllItems={this.deleteAllItems} />
 						</View>
-					</View>
-					<View>
-						<View>
-							<Button onPress={this.datepicker} title="Add due date" />
-						</View>
-						<View>
-							<Button onPress={this.timepicker} title="Add due time" />
-						</View>
-						{ show && <DateTimePicker value={date}
-									mode={mode}
-									is24Hour={true}
-									display="default"
-									onChange={this.setDate} />
-						}
 					</View>
 
 					{loadingItems ? (
