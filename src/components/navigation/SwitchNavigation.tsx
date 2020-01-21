@@ -12,7 +12,7 @@ const SwitchNavigator = createSwitchNavigator(
         Main: {screen: Main},
     },
     {
-        initialRouteName: 'Login'
+        initialRouteName: 'Main'
     }
 )
 
