@@ -48,12 +48,11 @@ export default class Main extends React.Component {
 		this.setState({
 			currentUser: user
 		})
-		
+		this.loadingCalendarItems(); 
 	}
 
 	componentDidMount = () => {
 		this.loadingItems();
-		this.loadingCalendarItems();
 		console.log('componentdidmount', this.state.currentUser)
 	}
 
@@ -79,10 +78,14 @@ export default class Main extends React.Component {
 	loadingCalendarItems = () => {
 			firebase.database().ref('/users/'+ this.state.currentUser + '/calendar').once('value', (snap) => {
 				let dataen = snap.val()
-				this.setState({
-					calendarCreated: dataen.calendarCreated,
-					calendarId: dataen.calendarId
-				});
+				try{
+					this.setState({
+						calendarCreated: dataen.calendarCreated,
+						calendarId: dataen.calendarId
+					});
+				}catch(err){
+					console.log(err)
+				}
 			});
 		};
 
@@ -197,7 +200,7 @@ export default class Main extends React.Component {
 		});
 	};
 
-	async addToDoToCalender(todoData) {
+	async addToDoToCalender() {
 		if(!this.state.calendarCreated){
 			this.createCalendar();
 			this.saveCalendarToDb()
