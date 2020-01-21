@@ -23,7 +23,12 @@ import firebase from 'firebase'
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 
-
+async function alertIfRemoteNotificationsDisabledAsync() {
+	const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status !== 'granted') {
+        alert("funker ikke")
+  }
+}
 const headerTitle = 'Todo';
 
 export default class Main extends React.Component {
@@ -37,12 +42,16 @@ export default class Main extends React.Component {
 		calendarID: '',
 		results:[]
 	};
+	
 
 	componentWillMount = () => {
 		var user = this.props.navigation.getParam('user', 'uid')
 		this.setState({
 			currentUser: user
 		})
+
+		alertIfRemoteNotificationsDisabledAsync()
+		
 	}
 	componentDidMount = () => {
 		this.loadingItems();
@@ -173,10 +182,7 @@ export default class Main extends React.Component {
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
 	async myCalendar() {  
-		const { status } = await Permissions.getAsync(Permissions.CALENDAR)
-		if (status !== 'granted') {
-			alert('Hey! You might want to enable calendar for my app, they are good.');
-		  }
+		
 		let iOsCalendarConfig = {
 		  title: 'Expo Calendar',
 		color: 'blue',

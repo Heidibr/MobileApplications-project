@@ -12,6 +12,7 @@
     "@react-native-firebase/firestore": "^6.0.4",
     "expo": "^35.0.0",
     "expo-calendar": "~7.0.0",
+    "expo-calendar-helper": "^0.1.9",
     "expo-google-app-auth": "^7.0.0",
     "expo-google-sign-in": "~7.0.0",
     "firebase": "^7.2.3",
