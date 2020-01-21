@@ -48,11 +48,24 @@ export default class Main extends React.Component {
 		this.setState({
 			currentUser: user
 		})
-		this.loadingCalendarItems(); 
+			firebase.database().ref('/users/'+ this.state.currentUser + '/calendar').once('value', (snap) => {
+				let dataen = snap.val()
+				if(dataen != null){
+					this.setState({
+						calendarCreated: dataen.calendarCreated,
+					});
+				}
+			});
+		
 	}
 
 	componentDidMount = () => {
 		this.loadingItems();
+		console.log(this.state.calendarCreated)
+		
+		if(this.state.calendarCreated){
+			this.loadingCalendarItems(); 
+		}
 		console.log('componentdidmount', this.state.currentUser)
 	}
 
@@ -78,14 +91,9 @@ export default class Main extends React.Component {
 	loadingCalendarItems = () => {
 			firebase.database().ref('/users/'+ this.state.currentUser + '/calendar').once('value', (snap) => {
 				let dataen = snap.val()
-				try{
 					this.setState({
-						calendarCreated: dataen.calendarCreated,
 						calendarId: dataen.calendarId
 					});
-				}catch(err){
-					console.log(err)
-				}
 			});
 		};
 
@@ -193,24 +201,24 @@ export default class Main extends React.Component {
 
 ///////////////////////// Code for communicating with the calendar\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
-	saveCalendarToDb = () => {
+	saveCalendarToDb = (created, id) => {
 		firebase.database().ref('/users/'+ this.state.currentUser + '/calendar').set({
-			calendarCreated: this.state.calendarCreated,
-			calendarId: this.state.calendarId
+			calendarCreated: created,
+			calendarId: id
 		});
 	};
 
 	async addToDoToCalender() {
 		if(!this.state.calendarCreated){
 			this.createCalendar();
-			this.saveCalendarToDb()
+			
 		}
 		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
 		if (status === 'granted') {
 			event = {
 				title: 'lage Pizza',
-				startDate: new Date("2020-01-23T17:30:00Z"),
-				endDate: new Date("2020-01-23T18:30:00Z")
+				startDate: new Date("2020-01-22T17:30:00Z"),
+				endDate: new Date("2020-01-22T18:30:00Z")
 			}	
 		  	let result = await Calendar.createEventAsync(this.state.calendarId, event);
 		  	console.log(result);
@@ -256,12 +264,14 @@ export default class Main extends React.Component {
 			console.log(event)
 			this.setState({ calendarId: event });
 			this.setState({ calendarCreated: true })
+			this.saveCalendarToDb(true, event)
 			})
 		  	.catch( error => {
 				console.log("Error while trying to create calendar: "+error)
   			});
 		console.log("calendar created")
 		console.log(`The new calendar id is: ${this.calendarId}`)
+		
  	}
 	  
 	render() {

@@ -14,6 +14,7 @@ class Login extends Component<any> {
         password:'', 
         currentUser: null
     }
+    
     handleLogin = () => {
         const {email, password} = this.state
         firebase.auth()
@@ -25,8 +26,7 @@ class Login extends Component<any> {
                 .ref('/users/' + result.user.uid)
                 .update({
                   last_logged_in: (new Date())
-                });
-              
+                });            
               this.props.navigation.navigate('Main', {user: result.user.uid})
             })
             .catch(error => console.log(error))
