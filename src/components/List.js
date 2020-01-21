@@ -46,6 +46,7 @@ class List extends Component {
             {text}
           </Text>
         </View>
+        
         {isCompleted ? (
           <View style={styles.button}>
             <TouchableOpacity onPressOut={() => deleteItem(id)}>
@@ -56,7 +57,11 @@ class List extends Component {
               />
             </TouchableOpacity>
           </View>
-        ) : null}
+        ) : (<View style={styles.column}>
+          <TouchableOpacity onPress={this.onToggleCircle}>
+          <Text style={{textDecorationLine: 'underline', color: 'black'}}>Calendar</Text>
+          </TouchableOpacity>
+        </View>)}
       </View>
     );
   }

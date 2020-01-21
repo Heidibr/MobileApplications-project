@@ -342,6 +342,7 @@ setDate = (event, date) => {
 						onChangeText={this.newInputValue}
 						onDoneAddItem={this.onDoneAddItem}
 					/>
+					</View>
 					<View>
 						<View>
 							<Button onPress={this.datepicker} title="date" /> 
@@ -349,7 +350,8 @@ setDate = (event, date) => {
 						<View>
 							<Button onPress={this.timepicker} title="time" />
 						</View>
-						{ show && <DateTimePicker value={date}
+						{ show && <DateTimePicker 
+									value={date}
 									mode={mode}
 									is24Hour={true}
 									display="default"
@@ -359,7 +361,7 @@ setDate = (event, date) => {
 									onChange={this.setDate} 
 									value={new Date()}/>
 						}
-					</View>
+
 				</View>
 
 
@@ -381,6 +383,7 @@ setDate = (event, date) => {
 										deleteItem={this.deleteItem}
 										completeItem={this.completeItem}
 										incompleteItem={this.incompleteItem}
+										
 									/>
 								))}
 						</ScrollView>
