@@ -267,7 +267,7 @@ async createCalendar() {
 
 ///////////////////////// Code for adding deadline to items\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
 
-setDate = (id, date) => {
+setDate = (event, date) => {
     date = date || this.state.date;
 
     this.setState({
@@ -290,6 +290,7 @@ setDate = (id, date) => {
   timepicker = () => {
     this.show('time');
   }
+
 	  
 	render() {
 		const { inputValue, loadingItems, allItems, show, date, mode } = this.state;
@@ -321,7 +322,27 @@ setDate = (id, date) => {
 						onChangeText={this.newInputValue}
 						onDoneAddItem={this.onDoneAddItem}
 					/>
+					<View>
+						<View>
+							<Button onPress={this.datepicker} title="date" /> 
+						</View>
+						<View>
+							<Button onPress={this.timepicker} title="time" />
+						</View>
+						{ show && <DateTimePicker value={date}
+									mode={mode}
+									is24Hour={true}
+									display="default"
+									placeholder="select date"
+									confirmBtnText="Confirm"
+									cancelBtnText="Cancel"
+									onChange={this.setDate} 
+									value={new Date()}/>
+						}
+					</View>
 				</View>
+
+
 				<View style={styles.list}>
 					<View style={styles.column}>
 						<SubTitle subtitle={'Recent Notes'} />
@@ -329,7 +350,6 @@ setDate = (id, date) => {
 							<ButtonD deleteAllItems={this.deleteAllItems} />
 						</View>
 					</View>
-
 					{loadingItems ? (
 						<ScrollView contentContainerStyle={styles.scrollableList}>
 							{Object.values(allItems)
