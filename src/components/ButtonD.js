@@ -4,10 +4,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { lighterWhite } from '../utils/Colors';
 
-const Button = ({ deleteAllItems }) => (
+const ButtonD = ({ deleteAllItems }) => (
 	<TouchableOpacity onPress={deleteAllItems}>
 		<MaterialIcons name="delete-sweep" size={24} color={lighterWhite} />
 	</TouchableOpacity>
 );
 
-export default Button;
+export default ButtonD;

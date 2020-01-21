@@ -2,11 +2,13 @@ import React, { useEffect } from 'react';
 import {
 	StyleSheet,
 	View,
+	Button,
 	StatusBar,
 	ActivityIndicator,
 	ScrollView,
 	AsyncStorage, 
 	TouchableHighlight, 
+	TouchableOpacity,
 	Text,
 	PermissionsAndroid,
 	Platform
@@ -18,10 +20,13 @@ import '@firebase/firestore';
 import SubTitle from './components/SubTitle';
 import Input from './components/Input';
 import List from './components/List';
-import Button from './components/Button';
+import ButtonD from './components/ButtonD';
+
 import firebase from 'firebase'
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 /*async function alertIfRemoteNotificationsDisabledAsync() {
 	const { status } = await Calendar.requestCalendarPermissionsAsync();
@@ -37,6 +42,7 @@ export default class Main extends React.Component {
 		loadingItems: false,
 		allItems: {},
 		isCompleted: false, 
+		//addToCalendar: '',
 		currentUser: null,
 		calendarCreated: false,
 		calendarId: '',
@@ -171,6 +177,10 @@ export default class Main extends React.Component {
 		});
 	};
 
+	addItemToCalendar = id => {
+	
+	}
+
 	deleteAllItems = async () => {
 		try {
 			await firebase.database().ref('/users/'+ this.state.currentUser + '/todos').remove()
@@ -273,9 +283,37 @@ export default class Main extends React.Component {
 		console.log(`The new calendar id is: ${this.calendarId}`)
 		
  	}
+
+
+///////////////////////// Code for adding deadline to items\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
+
+setDate = (event, date) => {
+    date = date || this.state.date;
+
+    this.setState({
+      show: Platform.OS === 'ios' ? true : false,
+      date,
+    });
+  }
+
+  show = mode => {
+    this.setState({
+      show: true,
+      mode,
+    });
+  }
+
+  datepicker = () => {
+    this.show('date');
+  }
+
+  timepicker = () => {
+    this.show('time');
+  }
+
 	  
 	render() {
-		const { inputValue, loadingItems, allItems } = this.state;
+		const { inputValue, loadingItems, allItems, show, date, mode } = this.state;
 		console.log('state i render', allItems)
 		return (
 			<View style={styles.view}>
@@ -304,15 +342,34 @@ export default class Main extends React.Component {
 						onChangeText={this.newInputValue}
 						onDoneAddItem={this.onDoneAddItem}
 					/>
+					<View>
+						<View>
+							<Button onPress={this.datepicker} title="date" /> 
+						</View>
+						<View>
+							<Button onPress={this.timepicker} title="time" />
+						</View>
+						{ show && <DateTimePicker value={date}
+									mode={mode}
+									is24Hour={true}
+									display="default"
+									placeholder="select date"
+									confirmBtnText="Confirm"
+									cancelBtnText="Cancel"
+									onChange={this.setDate} 
+									value={new Date()}/>
+						}
+					</View>
 				</View>
+
+
 				<View style={styles.list}>
 					<View style={styles.column}>
 						<SubTitle subtitle={'Recent Notes'} />
 						<View style={styles.deleteAllButton}>
-							<Button deleteAllItems={this.deleteAllItems} />
+							<ButtonD deleteAllItems={this.deleteAllItems} />
 						</View>
 					</View>
-
 					{loadingItems ? (
 						<ScrollView contentContainerStyle={styles.scrollableList}>
 							{Object.values(allItems)
@@ -329,9 +386,13 @@ export default class Main extends React.Component {
 						</ScrollView>
 					) : (
 						<ActivityIndicator size="large" color="white" />
+						
 					)}
+					<View>
 				</View>
 				</View>
+				</View>
+				
 		);
 	}
 }
