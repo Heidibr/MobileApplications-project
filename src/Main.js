@@ -2,13 +2,12 @@ import React, { useEffect } from 'react';
 import {
 	StyleSheet,
 	View,
-	Button,
 	StatusBar,
 	ActivityIndicator,
 	ScrollView,
 	AsyncStorage, 
+	Button,
 	TouchableHighlight, 
-	TouchableOpacity,
 	Text,
 	PermissionsAndroid,
 	Platform
@@ -21,7 +20,6 @@ import SubTitle from './components/SubTitle';
 import Input from './components/Input';
 import List from './components/List';
 import ButtonD from './components/ButtonD';
-
 import firebase from 'firebase'
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
@@ -42,10 +40,12 @@ export default class Main extends React.Component {
 		loadingItems: false,
 		allItems: {},
 		isCompleted: false, 
-		//addToCalendar: '',
 		currentUser: null,
 		calendarCreated: false,
 		calendarId: '',
+		date: new Date('2020-01-22T14:42:42'),
+    	mode: 'date',
+    	show: false,
 		results:[]
 	};
 
@@ -177,10 +177,6 @@ export default class Main extends React.Component {
 		});
 	};
 
-	addItemToCalendar = id => {
-	
-	}
-
 	deleteAllItems = async () => {
 		try {
 			await firebase.database().ref('/users/'+ this.state.currentUser + '/todos').remove()
@@ -226,9 +222,10 @@ export default class Main extends React.Component {
 		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
 		if (status === 'granted') {
 			event = {
-				title: 'lage Pizza',
-				startDate: new Date("2020-01-22T17:30:00Z"),
-				endDate: new Date("2020-01-22T18:30:00Z")
+				title: 'Make pizza',
+				startDate: new Date("2020-01-23T17:30:00Z"),
+				endDate: new Date("2020-01-23T18:30:00Z"), 
+				allDay: true
 			}	
 		  	let result = await Calendar.createEventAsync(this.state.calendarId, event);
 		  	console.log(result);
@@ -256,7 +253,7 @@ export default class Main extends React.Component {
 		  	return;
 		}	
 		let iOsCalendarConfig = {
-			title: 'ny kalender',
+			title: 'MobApp calendar',
 			color: 'blue',
 			entityType: Calendar.EntityTypes.EVENT,
 		 	name: 'internalCalendarName',
@@ -282,34 +279,32 @@ export default class Main extends React.Component {
 		console.log("calendar created")
 		console.log(`The new calendar id is: ${this.calendarId}`)
 		
- 	}
-
-
-///////////////////////// Code for adding deadline to items\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	
-
-setDate = (event, date) => {
-    date = date || this.state.date;
-
-    this.setState({
-      show: Platform.OS === 'ios' ? true : false,
-      date,
-    });
-  }
-
-  show = mode => {
-    this.setState({
-      show: true,
-      mode,
-    });
-  }
-
-  datepicker = () => {
-    this.show('date');
-  }
-
-  timepicker = () => {
-    this.show('time');
-  }
+	 }
+	 
+	 //////////////////////////
+	 setDate = (event, date) => {
+		date = date || this.state.date;
+	
+		this.setState({
+		  show: Platform.OS === 'ios' ? true : false,
+		  date,
+		});
+	  }
+	
+	  show = mode => {
+		this.setState({
+		  show: true,
+		  mode,
+		});
+	  }
+	
+	  datepicker = () => {
+		this.show('date');
+	  }
+	
+	  timepicker = () => {
+		this.show('time');
+	  }
 
 	  
 	render() {
@@ -329,7 +324,7 @@ setDate = (event, date) => {
 							justifyContent: 'space-around'}}
 					leftComponent={
 						<TouchableHighlight onPress={async () => await this.addToDoToCalender()}>
-						  <Text style={{textDecorationLine: 'underline', color: 'pink'}}>Calendar</Text>
+						  <Text style={{textDecorationLine: 'underline', color: 'green'}}>Add to calendar</Text>
 						</TouchableHighlight>}
 						containerStyle={{
 							backgroundColor: '#D3D3D3',
@@ -337,31 +332,35 @@ setDate = (event, date) => {
 				</View>
 				<View style={styles.inputContainer}>
 					<SubTitle subtitle={"What's Next?"} />
+					<View>
+					<View>
+					<Button onPress={this.datepicker} title="Choose deadline:" />
+					</View>
+					{ show && <DateTimePicker value={date}
+								mode={mode}
+								is24Hour={true}
+								display="default"
+								onChange={this.setDate} />
+					}
+				</View>
 					<Input
 						inputValue={inputValue}
 						onChangeText={this.newInputValue}
 						onDoneAddItem={this.onDoneAddItem}
 					/>
-					<View>
-						<View>
-							<Button onPress={this.datepicker} title="date" /> 
-						</View>
-						<View>
-							<Button onPress={this.timepicker} title="time" />
-						</View>
-						{ show && <DateTimePicker value={date}
-									mode={mode}
-									is24Hour={true}
-									display="default"
-									placeholder="select date"
-									confirmBtnText="Confirm"
-									cancelBtnText="Cancel"
-									onChange={this.setDate} 
-									value={new Date()}/>
-						}
-					</View>
 				</View>
 
+				{/* <View>
+					<View>
+					<Button onPress={this.datepicker} title="Choose deadline:" />
+					</View>
+					{ show && <DateTimePicker value={date}
+								mode={mode}
+								is24Hour={true}
+								display="default"
+								onChange={this.setDate} />
+					}
+				</View> */}
 
 				<View style={styles.list}>
 					<View style={styles.column}>
@@ -370,6 +369,7 @@ setDate = (event, date) => {
 							<ButtonD deleteAllItems={this.deleteAllItems} />
 						</View>
 					</View>
+
 					{loadingItems ? (
 						<ScrollView contentContainerStyle={styles.scrollableList}>
 							{Object.values(allItems)
@@ -386,13 +386,9 @@ setDate = (event, date) => {
 						</ScrollView>
 					) : (
 						<ActivityIndicator size="large" color="white" />
-						
 					)}
-					<View>
 				</View>
 				</View>
-				</View>
-				
 		);
 	}
 }

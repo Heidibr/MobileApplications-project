@@ -19,6 +19,7 @@ const Input = ({ inputValue, onChangeText, onDoneAddItem }) => (
     blurOnSubmit={true}
     onSubmitEditing={onDoneAddItem}
   />
+  
 );
 const styles = StyleSheet.create({
   input: {
