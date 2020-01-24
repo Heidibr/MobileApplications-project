@@ -79,6 +79,7 @@ export default class Main extends React.Component {
 		this.setState({
 			inputValue: value
 		});
+		
 	};
 
 	loadingItems = () => {
@@ -214,19 +215,14 @@ export default class Main extends React.Component {
 		});
 	};
 
-	async addToDoToCalender() {
+	async addToDoToCalender(event) {
 		if(!this.state.calendarCreated){
 			this.createCalendar();
 			
 		}
+		console.log(`testetestetetststtststs`, event)
 		const { status } = await Permissions.askAsync(Permissions.CALENDAR);
 		if (status === 'granted') {
-			event = {
-				title: 'Make pizza',
-				startDate: new Date("2020-01-23T17:30:00Z"),
-				endDate: new Date("2020-01-23T18:30:00Z"), 
-				allDay: true
-			}	
 		  	let result = await Calendar.createEventAsync(this.state.calendarId, event);
 		  	console.log(result);
 		}	
@@ -283,8 +279,17 @@ export default class Main extends React.Component {
 	 
 	 //////////////////////////
 	 setDate = (event, date) => {
+		event={
+			title: this.state.inputValue,
+				startDate: date,
+				endDate: date, 
+				allDay: true
+		}
+		this.addToDoToCalender(event)
+
+		console.log(`event!!!!!!!!!!!!!!!`,event)
 		date = date || this.state.date;
-	
+		
 		this.setState({
 		  show: Platform.OS === 'ios' ? true : false,
 		  date,
@@ -317,14 +322,14 @@ export default class Main extends React.Component {
 				<Header title={headerTitle} 
 					rightComponent={
 						<TouchableHighlight onPress={this.signOut}>
-						  <Text style={{textDecorationLine: 'underline', color: 'green'}}>Sign Out</Text>
+						  <Text style={{textDecorationLine: 'underline', color: 'blue'}}>Sign Out</Text>
 						</TouchableHighlight>}
 						containerStyle={{
 							backgroundColor: '#D3D3D3',
 							justifyContent: 'space-around'}}
 					leftComponent={
-						<TouchableHighlight onPress={async () => await this.addToDoToCalender()}>
-						  <Text style={{textDecorationLine: 'underline', color: 'green'}}>Add to calendar</Text>
+						<TouchableHighlight onPress={async () => await this.createCalendar()}>
+						  <Text style={{textDecorationLine: 'underline', color: 'blue'}}>Create calendar</Text>
 						</TouchableHighlight>}
 						containerStyle={{
 							backgroundColor: '#D3D3D3',
