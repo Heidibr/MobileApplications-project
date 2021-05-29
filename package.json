@@ -27,7 +27,7 @@
     "react-native-modal-datetime-picker": "8.x.x",
     "react-native-web": "^0.11.7",
     "react-navigation": "^4.0.10",
-    "ws": "^7.2.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@types/react": "^16.9.0",
